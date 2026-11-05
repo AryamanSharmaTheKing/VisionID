@@ -7,6 +7,9 @@ from tkinter import messagebox
 
 root = tk.Tk()
 root.title("VisionID")
+root.geometry("450x380")
+root.configure(bg="#11111B")
+
 engine = pyttsx3.init()
 path = "Faces"
 
@@ -43,8 +46,8 @@ else:
     engine.runAndWait()
 
 def on_click():
-    entry = tk.Entry(root)
-    entry.pack()
+    entry = tk.Entry(card_inner, font=("Helvetica", 11), bg="#313244", fg="#FFFFFF", insertbackground="white", relief="flat", highlightbackground="#45475a", highlightcolor="#89B4FA", highlightthickness=1)
+    entry.pack(fill="x", pady=(10, 5), ipady=4)
     def save_image():
         name_text = entry.get().strip()
         cap = cv2.VideoCapture(0)
@@ -71,16 +74,16 @@ def on_click():
         cv2.destroyAllWindows()
         entry.destroy()
         save_button.destroy()
-    save_button = tk.Button(root, text="Save", command=save_image)
-    save_button.pack()
+    save_button = tk.Button(card_inner, text="Save Face", font=("Helvetica", 10, "bold"), bg="#A6E3A1", fg="#11111B", activebackground="#B4BEFE", relief="flat", pady=5, cursor="hand2", command=save_image)
+    save_button.pack(fill="x", pady=5)
 
 def on_click_1():
     faces, ids, names = get_images_and_labels(path)
     if len(faces) > 1:
         recognizer.train(faces, np.array(ids))
     else:
-        label = tk.Label(root, text="Not enough training data!")
-        label.pack()
+        label = tk.Label(card_inner, text="Not enough training data!", font=("Helvetica", 10), fg="#F38BA8", bg="#1E1E2E")
+        label.pack(pady=5)
         return
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
@@ -107,6 +110,26 @@ def on_click_1():
     cap.release()
     cv2.destroyAllWindows()
 
-tk.Button(text="SCAN", command=on_click_1).pack()
-tk.Button(text="ADD NEW IMAGE", command=on_click).pack()
+main_container = tk.Frame(root, bg="#11111B")
+main_container.pack(fill="both", expand=True, padx=25, pady=20)
+
+header = tk.Label(main_container, text="👁️ VisionID", font=("Helvetica", 20, "bold"), fg="#89B4FA", bg="#11111B")
+header.pack(anchor="w", pady=(0, 15))
+
+card_frame = tk.Frame(main_container, bg="#1E1E2E", bd=0, relief="flat")
+card_frame.pack(fill="both", expand=True)
+
+card_inner = tk.Frame(card_frame, bg="#1E1E2E")
+card_inner.pack(fill="both", expand=True, padx=20, pady=20)
+
+scan_btn = tk.Button(card_inner, text="SCAN", font=("Helvetica", 11, "bold"), bg="#89B4FA", fg="#11111B", activebackground="#B4BEFE", relief="flat", pady=10, cursor="hand2", command=on_click_1)
+scan_btn.pack(fill="x", pady=(5, 10))
+scan_btn.bind("<Enter>", lambda e: scan_btn.config(bg="#B4BEFE"))
+scan_btn.bind("<Leave>", lambda e: scan_btn.config(bg="#89B4FA"))
+
+add_btn = tk.Button(card_inner, text="ADD NEW IMAGE", font=("Helvetica", 11, "bold"), bg="#313244", fg="#CDD6F4", activebackground="#45475a", activeforeground="#FFFFFF", relief="flat", pady=10, cursor="hand2", command=on_click)
+add_btn.pack(fill="x", pady=5)
+add_btn.bind("<Enter>", lambda e: add_btn.config(bg="#45475a"))
+add_btn.bind("<Leave>", lambda e: add_btn.config(bg="#313244"))
+
 root.mainloop()
